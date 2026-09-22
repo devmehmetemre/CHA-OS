@@ -1,0 +1,369 @@
+name: CHA OS ISO Build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Sürüm numarası (örn: 1.0.0)'
+        required: false
+        default: 'dev'
+      arch:
+        description: 'Mimari'
+        required: false
+        default: 'x86_64'
+        type: choice
+        options: [x86_64, aarch64]
+
+env:
+  CHAOS_VERSION: ${{ github.event.inputs.version || '1.0.0' }}
+  CHAOS_ARCH: ${{ github.event.inputs.arch || 'x86_64' }}
+  ALPINE_VERSION: '3.20'
+  ISO_NAME: 'chaOS'
+
+jobs:
+  # ─────────────────────────────────────────────
+  #  1) Lint & doğrulama
+  # ─────────────────────────────────────────────
+  validate:
+    name: Doğrulama
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kaynak kodunu çek
+        uses: actions/checkout@v4
+
+      - name: Shell betiklerini kontrol et (shellcheck)
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: './cha-setup'
+          severity: warning
+
+      - name: Dosya yapısını doğrula
+        run: |
+          echo "📋 Gerekli dosyalar kontrol ediliyor..."
+          required_files=(
+            "rootfs/etc/motd"
+            "rootfs/etc/os-release"
+            "rootfs/etc/chaOS-release"
+            "cha-setup/cha-setup.sh"
+            "chaOS-kernel/chaos-kernel.config"
+            "scripts/build-iso.sh"
+            "scripts/build-rootfs.sh"
+          )
+          for f in "${required_files[@]}"; do
+            if [ ! -f "$f" ]; then
+              echo "❌ Eksik dosya: $f"
+              exit 1
+            fi
+            echo "✅ $f"
+          done
+
+  # ─────────────────────────────────────────────
+  #  2) Rootfs oluşturma
+  # ─────────────────────────────────────────────
+  build-rootfs:
+    name: Rootfs Oluştur (${{ github.event.inputs.arch || 'x86_64' }})
+    runs-on: ubuntu-latest
+    needs: validate
+    container:
+      image: alpine:3.20
+      options: --privileged
+
+    steps:
+      - name: Kaynak kodunu çek
+        uses: actions/checkout@v4
+
+      - name: Alpine bağımlılıklarını kur
+        run: |
+          apk update
+          apk add --no-cache \
+            alpine-sdk \
+            apk-tools \
+            bash \
+            squashfs-tools \
+            xorriso \
+            grub \
+            grub-efi \
+            mtools \
+            dosfstools \
+            e2fsprogs \
+            cpio \
+            wget \
+            curl \
+            git \
+            pigz \
+            zstd
+
+      - name: Alpine minirootfs indir
+        run: |
+          ROOTFS_URL="https://dl-cdn.alpinelinux.org/alpine/v${ALPINE_VERSION}/releases/${CHAOS_ARCH}/alpine-minirootfs-${ALPINE_VERSION}.0-${CHAOS_ARCH}.tar.gz"
+          echo "📥 İndiriliyor: $ROOTFS_URL"
+          wget -q "$ROOTFS_URL" -O /tmp/alpine-minirootfs.tar.gz
+          mkdir -p /tmp/rootfs
+          tar -xzf /tmp/alpine-minirootfs.tar.gz -C /tmp/rootfs
+          echo "✅ Alpine minirootfs hazır"
+
+      - name: Rootfs oluştur
+        run: |
+          chmod +x scripts/build-rootfs.sh
+          bash scripts/build-rootfs.sh \
+            --rootfs /tmp/rootfs \
+            --version "$CHAOS_VERSION" \
+            --arch "$CHAOS_ARCH"
+
+      - name: Rootfs'i arşivle
+        run: |
+          cd /tmp
+          tar -czf rootfs-${CHAOS_ARCH}.tar.gz rootfs/
+          echo "📦 Rootfs arşivi: rootfs-${CHAOS_ARCH}.tar.gz"
+          du -sh rootfs-${CHAOS_ARCH}.tar.gz
+
+      - name: Rootfs artifact yükle
+        uses: actions/upload-artifact@v4
+        with:
+          name: chaOS-rootfs-${{ env.CHAOS_ARCH }}
+          path: /tmp/rootfs-${{ env.CHAOS_ARCH }}.tar.gz
+          retention-days: 1
+
+  # ─────────────────────────────────────────────
+  #  3) ISO oluşturma
+  # ─────────────────────────────────────────────
+  build-iso:
+    name: ISO Oluştur
+    runs-on: ubuntu-latest
+    needs: build-rootfs
+    container:
+      image: alpine:3.20
+      options: --privileged
+
+    steps:
+      - name: Kaynak kodunu çek
+        uses: actions/checkout@v4
+
+      - name: Bağımlılıkları kur
+        run: |
+          apk update
+          apk add --no-cache \
+            squashfs-tools \
+            xorriso \
+            grub \
+            grub-efi \
+            mtools \
+            dosfstools \
+            bash \
+            cpio \
+            pigz \
+            zstd \
+            imagemagick \
+            font-dejavu
+
+      - name: Rootfs artifact indir
+        uses: actions/download-artifact@v4
+        with:
+          name: chaOS-rootfs-${{ env.CHAOS_ARCH }}
+          path: /tmp
+
+      - name: Rootfs'i aç
+        run: |
+          mkdir -p /tmp/rootfs
+          tar -xzf /tmp/rootfs-${CHAOS_ARCH}.tar.gz -C /tmp/
+
+      - name: ISO dizin yapısını hazırla
+        run: |
+          mkdir -p /tmp/iso/{boot/grub,EFI/BOOT,live}
+
+          # SquashFS oluştur (rootfs'i sıkıştır)
+          echo "🗜️ SquashFS oluşturuluyor..."
+          mksquashfs /tmp/rootfs /tmp/iso/live/filesystem.squashfs \
+            -comp zstd -Xcompression-level 19 \
+            -b 1048576 \
+            -no-progress \
+            -e /proc /sys /dev
+
+          echo "📊 SquashFS boyutu:"
+          du -sh /tmp/iso/live/filesystem.squashfs
+
+      - name: GRUB yapılandır
+        run: |
+          # GRUB config
+          cat > /tmp/iso/boot/grub/grub.cfg << 'GRUBCFG'
+          set default=0
+          set timeout=5
+          set timeout_style=menu
+
+          # Temayı yükle
+          if [ -f /boot/grub/theme/theme.txt ]; then
+            insmod gfxterm
+            insmod png
+            set gfxmode=auto
+            terminal_output gfxterm
+            set theme=/boot/grub/theme/theme.txt
+          fi
+
+          menuentry "CHA OS 1.0.0 — Başlat" --class chaos {
+            linux /boot/vmlinuz quiet splash rd.systemd.show_status=false \
+                  rd.udev.log_level=3 vt.global_cursor_default=0
+            initrd /boot/initrd.img
+          }
+
+          menuentry "CHA OS 1.0.0 — Kurulum Sihirbazı (cha-setup)" --class chaos {
+            linux /boot/vmlinuz quiet splash chasetup=1
+            initrd /boot/initrd.img
+          }
+
+          menuentry "CHA OS — Güvenli Mod" --class chaos {
+            linux /boot/vmlinuz single nomodeset
+            initrd /boot/initrd.img
+          }
+
+          menuentry "RAM'den Başlat (toram)" --class chaos {
+            linux /boot/vmlinuz quiet splash toram
+            initrd /boot/initrd.img
+          }
+
+          menuentry "Bellek Testi (memtest86+)" {
+            linux16 /boot/memtest86+.bin
+          }
+          GRUBCFG
+
+          # GRUB temayı kopyala
+          mkdir -p /tmp/iso/boot/grub/theme
+          cp -r chaOS-branding/grub-theme/* /tmp/iso/boot/grub/theme/
+
+      - name: Kernel ve initrd'yi yerleştir
+        run: |
+          # Kernel ve initrd'yi rootfs'den al
+          find /tmp/rootfs/boot -name 'vmlinuz*' | head -1 | \
+            xargs -I{} cp {} /tmp/iso/boot/vmlinuz
+          find /tmp/rootfs/boot -name 'initrd*' -o -name 'initramfs*' | head -1 | \
+            xargs -I{} cp {} /tmp/iso/boot/initrd.img
+
+          echo "✅ Kernel yerleştirildi:"
+          ls -lh /tmp/iso/boot/
+
+      - name: EFI imajı oluştur
+        run: |
+          # EFI image (FAT)
+          dd if=/dev/zero of=/tmp/iso/EFI/efiboot.img bs=1M count=10
+          mkfs.vfat /tmp/iso/EFI/efiboot.img
+          mmd -i /tmp/iso/EFI/efiboot.img ::/EFI ::/EFI/BOOT
+          mcopy -i /tmp/iso/EFI/efiboot.img \
+            /usr/lib/grub/x86_64-efi/bootx64.efi \
+            ::/EFI/BOOT/BOOTX64.EFI
+
+      - name: ISO'yu oluştur (xorriso)
+        run: |
+          ISO_FILENAME="${ISO_NAME}-${CHAOS_VERSION}-${CHAOS_ARCH}.iso"
+          echo "💿 ISO oluşturuluyor: $ISO_FILENAME"
+
+          xorriso -as mkisofs \
+            -iso-level 3 \
+            -full-iso9660-filenames \
+            -volid "CHAOSOS_$(echo $CHAOS_VERSION | tr '.' '_')" \
+            -output "/tmp/${ISO_FILENAME}" \
+            -eltorito-boot boot/grub/grub-eltorito.img \
+            -no-emul-boot \
+            -boot-load-size 4 \
+            -boot-info-table \
+            --grub2-boot-info \
+            --grub2-mbr /usr/lib/grub/i386-pc/boot_hybrid.img \
+            -append_partition 2 0xef /tmp/iso/EFI/efiboot.img \
+            -e '--interval:appended_partition_2:all::' \
+            -no-emul-boot \
+            -isohybrid-gpt-basdat \
+            /tmp/iso
+
+          echo "✅ ISO oluşturuldu!"
+          echo "📊 ISO boyutu:"
+          du -sh "/tmp/${ISO_FILENAME}"
+          md5sum "/tmp/${ISO_FILENAME}" > "/tmp/${ISO_FILENAME}.md5"
+          sha256sum "/tmp/${ISO_FILENAME}" > "/tmp/${ISO_FILENAME}.sha256"
+
+      - name: ISO artifact yükle
+        uses: actions/upload-artifact@v4
+        with:
+          name: chaOS-${{ env.CHAOS_VERSION }}-${{ env.CHAOS_ARCH }}-iso
+          path: |
+            /tmp/chaOS-*.iso
+            /tmp/chaOS-*.md5
+            /tmp/chaOS-*.sha256
+          retention-days: 30
+
+  # ─────────────────────────────────────────────
+  #  4) Release oluştur (sadece tag'de)
+  # ─────────────────────────────────────────────
+  release:
+    name: GitHub Release Oluştur
+    runs-on: ubuntu-latest
+    needs: build-iso
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      - name: Kaynak kodunu çek
+        uses: actions/checkout@v4
+
+      - name: ISO artifact indir
+        uses: actions/download-artifact@v4
+        with:
+          pattern: chaOS-*-iso
+          path: ./release-files
+          merge-multiple: true
+
+      - name: Release notları oluştur
+        run: |
+          cat > release-notes.md << EOF
+          # CHA OS ${{ env.CHAOS_VERSION }}
+
+          > Minimal. Hızlı. Güçlü. Senin OS'un.
+
+          ## 📥 İndirme
+
+          | Dosya | Açıklama |
+          |-------|----------|
+          | \`chaOS-${{ env.CHAOS_VERSION }}-x86_64.iso\` | 64-bit ISO (önerilen) |
+
+          ## ✨ Bu sürümdeki yenilikler
+
+          - İlk stabil sürüm
+          - XFCE, LXQt, Openbox, i3, KDE Plasma masaüstü desteği
+          - \`cha-setup\` TUI kurulum sihirbazı
+          - Özel hafifletilmiş chaos-lts kernel
+          - CHA OS özel GRUB teması
+          - Özel ikon paketi
+
+          ## 🔧 Sistem Gereksinimleri
+
+          | Bileşen | Minimum | Önerilen |
+          |---------|---------|----------|
+          | RAM | 512MB (CLI) | 2GB+ (DE) |
+          | Disk | 4GB | 10GB+ |
+          | İşlemci | x86_64 | x86_64 |
+
+          ## 🔑 Doğrulama
+
+          \`\`\`bash
+          md5sum -c chaOS-${{ env.CHAOS_VERSION }}-x86_64.iso.md5
+          sha256sum -c chaOS-${{ env.CHAOS_VERSION }}-x86_64.iso.sha256
+          \`\`\`
+
+          ---
+          *Alpine Linux tabanlı — [chaossmp.qzz.io](https://chaossmp.qzz.io)*
+          EOF
+
+      - name: GitHub Release oluştur
+        uses: softprops/action-gh-release@v1
+        with:
+          name: CHA OS ${{ env.CHAOS_VERSION }}
+          body_path: release-notes.md
+          draft: false
+          prerelease: ${{ contains(env.CHAOS_VERSION, 'alpha') || contains(env.CHAOS_VERSION, 'beta') || contains(env.CHAOS_VERSION, 'rc') }}
+          files: |
+            release-files/*.iso
+            release-files/*.md5
+            release-files/*.sha256
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
