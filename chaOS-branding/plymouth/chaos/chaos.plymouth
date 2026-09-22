@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=CHA OS
+Description=CHA OS resmi açılış animasyonu — minimal, mavi vurgulu
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/chaos
+ScriptFile=/usr/share/plymouth/themes/chaos/chaos.script

@@ -1,0 +1,69 @@
+# CHA OS GRUB Theme
+# Tasarım: Minimal, karanlık, mavi vurgu
+
+title-text: ""
+desktop-color: "#0a0a0f"
+desktop-image: "background.png"
+
+# Terminal kutusu (menü arka planı)
++ boot_menu {
+    left = 25%
+    top = 25%
+    width = 50%
+    height = 50%
+
+    item_color = "#c0c0d0"
+    item_font = "DejaVu Sans Bold 14"
+    selected_item_color = "#ffffff"
+    selected_item_font = "DejaVu Sans Bold 14"
+    selected_item_pixmap_style = "select_*.png"
+
+    item_height = 32
+    item_padding = 15
+    item_spacing = 4
+    scrollbar = false
+}
+
+# Başlık
++ label {
+    top = 12%
+    left = 0
+    width = 100%
+    align = "center"
+    text = "CHA OS"
+    font = "DejaVu Sans Bold 36"
+    color = "#4a9eff"
+}
+
+# Alt başlık
++ label {
+    top = 20%
+    left = 0
+    width = 100%
+    align = "center"
+    text = "Minimal. Hızlı. Güçlü."
+    font = "DejaVu Sans 16"
+    color = "#6080a0"
+}
+
+# Sürüm etiketi
++ label {
+    top = 80%
+    left = 0
+    width = 100%
+    align = "center"
+    text = "CHA OS 1.0.0 | Alpine tabanlı"
+    font = "DejaVu Sans 12"
+    color = "#404060"
+}
+
+# Tuş yardımı
++ label {
+    top = 88%
+    left = 0
+    width = 100%
+    align = "center"
+    text = "↑↓ Seç   Enter Başlat   e Düzenle   c Konsol"
+    font = "DejaVu Sans 12"
+    color = "#505070"
+}

@@ -1,0 +1,10 @@
+NAME="CHA OS"
+VERSION="1.0.0"
+ID=chaos
+ID_LIKE=alpine
+VERSION_ID=1.0.0
+PRETTY_NAME="CHA OS 1.0.0 (Chaos Edition)"
+ANSI_COLOR="1;34"
+HOME_URL="https://github.com/tagchaos/chaOS"
+SUPPORT_URL="https://github.com/tagchaos/chaOS/issues"
+BUG_REPORT_URL="https://github.com/tagchaos/chaOS/issues"

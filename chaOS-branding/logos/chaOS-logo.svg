@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Mavi gradyan arka plan -->
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#0d1b2e"/>
+      <stop offset="100%" stop-color="#060a12"/>
+    </radialGradient>
+
+    <!-- Logo mavi gradyanı -->
+    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#6ab4ff"/>
+      <stop offset="50%"  stop-color="#4a9eff"/>
+      <stop offset="100%" stop-color="#2070cc"/>
+    </linearGradient>
+
+    <!-- Parlama efekti -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Hafif gölge -->
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="6"
+                    flood-color="#4a9eff" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Arka plan dairesi -->
+  <circle cx="256" cy="256" r="252" fill="url(#bgGrad)"/>
+
+  <!-- Dış halka -->
+  <circle cx="256" cy="256" r="245"
+          fill="none" stroke="#4a9eff" stroke-width="2" opacity="0.3"/>
+
+  <!-- İç halka -->
+  <circle cx="256" cy="256" r="228"
+          fill="none" stroke="#4a9eff" stroke-width="1" opacity="0.15"/>
+
+  <!-- "C" harfi — CHA OS'un C'si, stilize -->
+  <path d="M 220 140
+             C 145 140, 95 190, 95 256
+             C 95 322, 145 372, 220 372
+             L 230 372
+             C 210 372, 170 348, 155 310
+             L 210 310
+             C 220 340, 238 352, 256 352
+             C 296 352, 325 310, 325 256
+             C 325 202, 296 160, 256 160
+             C 238 160, 220 172, 210 202
+             L 155 202
+             C 170 164, 210 140, 230 140
+             Z"
+        fill="url(#logoGrad)"
+        filter="url(#shadow)"
+        opacity="0.95"/>
+
+  <!-- "H" harfi ortası -->
+  <rect x="285" y="160" width="38" height="192"
+        rx="6" fill="url(#logoGrad)" filter="url(#shadow)" opacity="0.90"/>
+
+  <rect x="365" y="160" width="38" height="192"
+        rx="6" fill="url(#logoGrad)" filter="url(#shadow)" opacity="0.90"/>
+
+  <rect x="285" y="238" width="118" height="36"
+        rx="6" fill="url(#logoGrad)" filter="url(#shadow)" opacity="0.90"/>
+
+  <!-- Kaos kıvılcımları — dört köşe nokta -->
+  <circle cx="256" cy="60"  r="5" fill="#4a9eff" opacity="0.6" filter="url(#glow)"/>
+  <circle cx="452" cy="256" r="5" fill="#4a9eff" opacity="0.6" filter="url(#glow)"/>
+  <circle cx="256" cy="452" r="5" fill="#4a9eff" opacity="0.6" filter="url(#glow)"/>
+  <circle cx="60"  cy="256" r="5" fill="#4a9eff" opacity="0.6" filter="url(#glow)"/>
+
+  <!-- Bağlantı çizgileri (zarif) -->
+  <line x1="256" y1="60"  x2="452" y2="256"
+        stroke="#4a9eff" stroke-width="0.8" opacity="0.12"/>
+  <line x1="452" y1="256" x2="256" y2="452"
+        stroke="#4a9eff" stroke-width="0.8" opacity="0.12"/>
+  <line x1="256" y1="452" x2="60"  y2="256"
+        stroke="#4a9eff" stroke-width="0.8" opacity="0.12"/>
+  <line x1="60"  y1="256" x2="256" y2="60"
+        stroke="#4a9eff" stroke-width="0.8" opacity="0.12"/>
+
+  <!-- Alt metin: "CHA OS" -->
+  <text x="256" y="490"
+        font-family="'DejaVu Sans', Arial, sans-serif"
+        font-size="22"
+        font-weight="bold"
+        fill="#4a9eff"
+        text-anchor="middle"
+        letter-spacing="6"
+        opacity="0.75">CHA OS</text>
+</svg>

@@ -1,0 +1,133 @@
+#!/usr/bin/plymouthd
+# CHA OS Plymouth Açılış Teması
+# Dosya: chaOS-branding/plymouth/chaos/chaos.script
+
+# ─── Sabitler ─────────────────────────────────
+LOGO_SCALE    = 0.35;
+BAR_WIDTH     = 400;
+BAR_HEIGHT    = 6;
+BAR_Y_OFFSET  = 0.72;
+FADE_SPEED    = 0.05;
+
+# ─── Arka plan ────────────────────────────────
+bg = Rectangle();
+bg.SetX(0);
+bg.SetY(0);
+bg.SetWidth(Window.GetWidth());
+bg.SetHeight(Window.GetHeight());
+bg.SetColor(0.04, 0.04, 0.08, 1.0);   # #0a0a14
+
+# ─── Logo ─────────────────────────────────────
+logo_image = Image("logo.png");
+logo_sprite = Sprite(logo_image);
+
+logo_x = (Window.GetWidth()  - logo_image.GetWidth()  * LOGO_SCALE) / 2;
+logo_y = (Window.GetHeight() * 0.30);
+
+logo_sprite.SetX(logo_x);
+logo_sprite.SetY(logo_y);
+logo_sprite.SetOpacity(0.0);
+
+# ─── Tagline metni ────────────────────────────
+tagline = Image.Text(
+    "Minimal. Hızlı. Güçlü.",
+    0.75, 0.75, 0.90,       # açık mavi-gri renk
+    1,                       # bold
+    "DejaVu Sans 16"
+);
+tagline_sprite = Sprite(tagline);
+tagline_sprite.SetX((Window.GetWidth() - tagline.GetWidth()) / 2);
+tagline_sprite.SetY(Window.GetHeight() * 0.56);
+tagline_sprite.SetOpacity(0.0);
+
+# ─── İlerleme çubuğu arka planı ───────────────
+bar_bg = Rectangle();
+bar_bg.SetWidth(BAR_WIDTH);
+bar_bg.SetHeight(BAR_HEIGHT);
+bar_bg.SetX((Window.GetWidth() - BAR_WIDTH) / 2);
+bar_bg.SetY(Window.GetHeight() * BAR_Y_OFFSET);
+bar_bg.SetColor(0.12, 0.14, 0.20, 1.0);  # koyu arka plan
+
+# ─── İlerleme çubuğu (aktif) ──────────────────
+bar_fill = Rectangle();
+bar_fill.SetWidth(0);
+bar_fill.SetHeight(BAR_HEIGHT);
+bar_fill.SetX((Window.GetWidth() - BAR_WIDTH) / 2);
+bar_fill.SetY(Window.GetHeight() * BAR_Y_OFFSET);
+bar_fill.SetColor(0.29, 0.61, 1.0, 1.0); # #4a9eff mavi
+
+# ─── Sürüm etiketi ────────────────────────────
+version_text = Image.Text(
+    "CHA OS 1.0.0",
+    0.38, 0.40, 0.52,
+    0,
+    "DejaVu Sans 11"
+);
+version_sprite = Sprite(version_text);
+version_sprite.SetX((Window.GetWidth() - version_text.GetWidth()) / 2);
+version_sprite.SetY(Window.GetHeight() * BAR_Y_OFFSET + 18);
+version_sprite.SetOpacity(0.0);
+
+# ─── Global durum ─────────────────────────────
+progress      = 0.0;
+logo_opacity  = 0.0;
+fade_in_done  = 0;
+
+# ─── Fade-in animasyonu ────────────────────────
+fun FadeIn(time) {
+    if (logo_opacity < 1.0) {
+        logo_opacity = logo_opacity + FADE_SPEED;
+        if (logo_opacity > 1.0) { logo_opacity = 1.0; }
+        logo_sprite.SetOpacity(logo_opacity);
+        tagline_sprite.SetOpacity(logo_opacity * 0.85);
+        version_sprite.SetOpacity(logo_opacity * 0.70);
+    } else {
+        fade_in_done = 1;
+    }
+}
+
+# ─── İlerleme güncellemesi ────────────────────
+Plymouth.SetBootProgressFunction(fun(time, progress_val) {
+    progress = progress_val;
+    new_width = Math.Int(BAR_WIDTH * progress);
+    bar_fill.SetWidth(new_width);
+});
+
+# ─── Ana döngü ────────────────────────────────
+Plymouth.SetRefreshFunction(fun() {
+    if (!fade_in_done) {
+        FadeIn(Plymouth.GetTime());
+    }
+});
+
+# ─── Şifre kutusu (şifreli disk için) ─────────
+fun ShowPasswordDialog(prompt, bullets) {
+    pass_bg = Rectangle();
+    pass_bg.SetWidth(340);
+    pass_bg.SetHeight(48);
+    pass_bg.SetX((Window.GetWidth() - 340) / 2);
+    pass_bg.SetY(Window.GetHeight() * 0.64);
+    pass_bg.SetColor(0.08, 0.09, 0.14, 0.95);
+
+    prompt_img = Image.Text(
+        prompt + ": " + String.Repeat("●", bullets),
+        0.90, 0.90, 1.0,
+        0,
+        "DejaVu Sans Mono 13"
+    );
+    prompt_spr = Sprite(prompt_img);
+    prompt_spr.SetX((Window.GetWidth() - prompt_img.GetWidth()) / 2);
+    prompt_spr.SetY(Window.GetHeight() * 0.646);
+}
+
+Plymouth.SetDisplayPasswordFunction(ShowPasswordDialog);
+
+# ─── Kapanış fade-out ─────────────────────────
+Plymouth.SetQuitFunction(fun() {
+    # Tüm sprite'ları fade-out yap
+    logo_sprite.SetOpacity(0.0);
+    tagline_sprite.SetOpacity(0.0);
+    version_sprite.SetOpacity(0.0);
+    bar_bg.SetOpacity(0.0);
+    bar_fill.SetOpacity(0.0);
+});

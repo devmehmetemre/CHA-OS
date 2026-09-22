@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <defs>
+    <linearGradient id="termGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#1a2540"/>
+      <stop offset="100%" stop-color="#0c1525"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Terminal penceresi -->
+  <rect x="4" y="6" width="40" height="36"
+        rx="4" fill="url(#termGrad)"
+        stroke="#4a9eff" stroke-width="1.2" stroke-opacity="0.6"/>
+
+  <!-- Başlık çubuğu -->
+  <rect x="4" y="6" width="40" height="10"
+        rx="4" fill="#4a9eff" opacity="0.18"/>
+  <rect x="4" y="11" width="40" height="5" fill="#4a9eff" opacity="0.18"/>
+
+  <!-- Başlık çubuğu düğmeleri -->
+  <circle cx="12" cy="11" r="2.5" fill="#ff5f57" opacity="0.8"/>
+  <circle cx="20" cy="11" r="2.5" fill="#febc2e" opacity="0.8"/>
+  <circle cx="28" cy="11" r="2.5" fill="#28c840" opacity="0.8"/>
+
+  <!-- Terminal içeriği -->
+  <!-- Prompt işareti -->
+  <text x="9" y="28"
+        font-family="monospace" font-size="9"
+        fill="#4a9eff" opacity="0.9">$</text>
+
+  <!-- Yanıp sönen imleç -->
+  <rect x="16" y="21" width="6" height="8"
+        fill="#4a9eff" opacity="0.7" rx="1"/>
+
+  <!-- Alt metin satırları -->
+  <line x1="9" y1="34" x2="34" y2="34"
+        stroke="#4a9eff" stroke-width="1" opacity="0.3"/>
+  <line x1="9" y1="38" x2="24" y2="38"
+        stroke="#4a9eff" stroke-width="1" opacity="0.2"/>
+</svg>

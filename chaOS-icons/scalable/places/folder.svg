@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <defs>
+    <linearGradient id="folderGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#5aabff"/>
+      <stop offset="100%" stop-color="#2a7add"/>
+    </linearGradient>
+    <linearGradient id="tabGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#70bbff"/>
+      <stop offset="100%" stop-color="#4a9eff"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="1" stdDeviation="1.5"
+                    flood-color="#0a3060" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Klasör sekmesi -->
+  <path d="M 6 14 L 18 14 L 21 10 L 6 10 Z"
+        fill="url(#tabGrad)" rx="2"/>
+
+  <!-- Ana klasör gövdesi -->
+  <rect x="4" y="13" width="40" height="28"
+        rx="3" fill="url(#folderGrad)"
+        filter="url(#shadow)"/>
+
+  <!-- Üst parlama -->
+  <rect x="4" y="13" width="40" height="10"
+        rx="3" fill="white" opacity="0.12"/>
+
+  <!-- İç çizgi detayı -->
+  <line x1="10" y1="26" x2="38" y2="26"
+        stroke="white" stroke-width="1.2" opacity="0.25"/>
+  <line x1="10" y1="31" x2="32" y2="31"
+        stroke="white" stroke-width="1.2" opacity="0.18"/>
+  <line x1="10" y1="36" x2="28" y2="36"
+        stroke="white" stroke-width="1.2" opacity="0.12"/>
+</svg>
