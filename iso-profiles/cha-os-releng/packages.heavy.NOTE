@@ -1,0 +1,6 @@
+# CHA OS agir DE'ler - ISO degil, kurulum sonrasi meta-paket olarak kurulur.
+# Neden: KDE (~800MB idle) ve GNOME (~900MB idle) 4GB alti + HDD/eMMC'de paradoksa aykiri.
+# Kullanim: pacman -S cha-kde  /  pacman -S cha-gnome
+# Bu dosyalar Faz4'te cha-kde / cha-gnome PKGBUILD'e donecek.
+# kde: plasma-desktop sddm konsole dolphin
+# gnome: gnome-shell gdm gnome-terminal nautilus

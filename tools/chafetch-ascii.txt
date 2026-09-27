@@ -1,0 +1,19 @@
+# chafetch ASCII - 3 genislik icin (dar <60, normal 60-100, genis 100+)
+# Kullanim: fastfetch --logo-type file --logo ~/.local/share/cha/ascii-normal.txt --logo-color-1 teal
+# --- dar (40 kol) ---
+#  C H A
+#  ~~~>
+# --- normal (asagida) ---
+#      ____ _   _    _
+#     / ___| | | |  / \
+#    | |   | |_| | / _ \
+#    | |___|  _  |/ ___ \
+#     \____|_| |_/_/   \_\
+#         OS · Kivilcim
+# --- genis (renkli fastfetch ile) ---
+#  ██████╗██╗  ██╗ █████╗
+# ██╔════╝██║  ██║██╔══██╗
+# ██║     ███████║███████║
+# ██║     ██╔══██║██╔══██║
+# ╚██████╗██║  ██║██║  ██║
+#  ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝  OS

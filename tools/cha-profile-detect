@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# cha-profile-detect: CPU/RAM/disk otomatik tespit + oneri
+# Cikti: KEY=VALUE (cha-welcome ve Calamares tarafindan okunur)
+set -euo pipefail
+CORES=$(nproc)
+MEM_MB=$(free -m | awk '/^Mem:/{print $2}')
+DISK_TYPE="unknown"
+# lsblk: rota=1 HDD, 0 SSD/NVMe; mmcblk=eMMC
+if lsblk -d -o NAME,ROTA,TYPE | grep -q mmcblk; then DISK_TYPE="eMMC"
+elif lsblk -d -o NAME,ROTA | awk '$2==1{found=1} END{exit !found}'; then DISK_TYPE="HDD"
+elif ls /dev/nvme*n1 >/dev/null 2>&1; then DISK_TYPE="NVMe"
+else DISK_TYPE="SSD"
+fi
+# Profil karari
+if [ "$MEM_MB" -lt 4000 ] || [ "$CORES" -le 2 ]; then PROFILE="lowend"; KERNEL="cha-kernel-lowend"; ZRAM="150%"; COMPOSITOR="off"; GOVERNOR="powersave"
+elif [ "$MEM_MB" -lt 8000 ]; then PROFILE="balanced"; KERNEL="cha-kernel"; ZRAM="100%"; COMPOSITOR="on-lite"; GOVERNOR="schedutil"
+else PROFILE="performance"; KERNEL="cha-kernel-v3"; ZRAM="50%"; COMPOSITOR="on"; GOVERNOR="performance"
+fi
+cat <<EOF
+CORES=$CORES
+MEM_MB=$MEM_MB
+DISK_TYPE=$DISK_TYPE
+PROFILE=$PROFILE
+KERNEL_SUGGEST=$KERNEL
+ZRAM_SUGGEST=$ZRAM
+COMPOSITOR_SUGGEST=$COMPOSITOR
+GOVERNOR_SUGGEST=$GOVERNOR
+EOF

@@ -1,0 +1,19 @@
+# /etc/default/grub - CHA OS varsayilan (hizli/gizli boot + os-prober markali)
+GRUB_DEFAULT=saved
+GRUB_SAVEDEFAULT=true
+GRUB_TIMEOUT=5
+GRUB_TIMEOUT_STYLE=menu
+# Hizli mod isteyen icin: asagidaki 2 satiri ac (menu gizlenir, ESC/Shift ile acilir)
+#GRUB_TIMEOUT=0
+#GRUB_TIMEOUT_STYLE=hidden
+GRUB_DISTRIBUTOR="CHA OS"
+GRUB_CMDLINE_LINUX_DEFAULT="quiet splash rd.systemd.show_status=auto rd.udev.log_level=3"
+GRUB_CMDLINE_LINUX=""
+GRUB_GFXMODE=auto
+GRUB_GFXPAYLOAD_LINUX=keep
+GRUB_THEME="/boot/grub/themes/cha/theme.txt"
+GRUB_DISABLE_OS_PROBER=false
+# Dual-boot'ta Windows girdisi "Windows Boot Manager" yerine markali sinifla gelir, theme.txt renkleri bozulmaz
+GRUB_OS_PROBER_SKIP_LIST=""
+GRUB_DISABLE_RECOVERY=true
+GRUB_ENABLE_BLSCFG=false

@@ -1,0 +1,26 @@
+---
+componentName: cha
+welcomeStyleCalamares: true
+windowExpanding: normal
+windowSize: 1024px,640px
+windowPlacement: center
+productName: CHA OS
+shortProductName: CHA
+version: 2026.10 Kıvılcım
+shortVersion: 2026.10
+versionedName: CHA OS 2026.10 Kıvılcım
+shortVersionedName: CHA 2026.10
+bootloaderEntryName: CHA OS
+productUrl: https://cha-os.local
+supportUrl: https://cha-os.local/wiki
+releaseNotesUrl: https://cha-os.local/releases/2026.10
+welcomeImage: logo.png
+welcomeText: "Zayıf makine, güçlü his. Dil seçiminden sonra kurulum profilinize göre ayarlanır."
+windowIcon: logo.png
+style:
+  sidebarBackground: "#10151A"
+  sidebarText: "#F2F4F3"
+  sidebarTextHighlight: "#0FB5A6"
+  sidebarTextSelect: "#FFB224"
+slideshow: show.qml
+welcomeExpanding: true

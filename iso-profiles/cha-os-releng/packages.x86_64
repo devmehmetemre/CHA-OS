@@ -1,0 +1,22 @@
+base
+linux
+linux-firmware
+intel-ucode
+amd-ucode
+grub
+efibootmgr
+archiso
+networkmanager
+iwd
+base-devel
+git
+nano
+inter-font
+jetbrains-mono
+zram-generator
+tlp
+fastfetch
+# Not: DE paketleri bu dosyada DEGIL.
+# Her flavor kendi packages dosyasi kullanir:
+# packages.xfce.x86_64 / packages.lxqt.x86_64 / packages.kde.x86_64 / packages.gnome.x86_64
+# Ornek: BUILD: mkarchiso -v -w /tmp/cha-work -o out/ iso-profiles/cha-os-releng-xfce/

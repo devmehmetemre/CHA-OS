@@ -1,0 +1,40 @@
+name: cha-os ISO
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-iso:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - name: free disk
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost 2>/dev/null || true
+          docker system prune -af 2>/dev/null || true
+          df -h
+      - name: build ISO in privileged arch
+        run: |
+          docker run --privileged --rm \
+            -v $GITHUB_WORKSPACE:/workspace -w /workspace \
+            archlinux:latest bash -c '
+            set -e
+            pacman -Syu --noconfirm --needed archiso mkinitcpio git reflector librsvg imagemagick grub squashfs-tools dosfstools mtools xorriso
+            # asset uretimi (o kodlar da Actionsda calisir)
+            bash cha-os/branding/grub/make-grub-assets.sh || (mkdir -p cha-os/branding/grub/themes/cha && convert -size 1920x1080 xc:"#10151A" cha-os/branding/grub/themes/cha/background.png)
+            bash cha-os/branding/plymouth/make-plymouth-assets.sh || true
+            # CI gecici: cha-kernel henuz repoda yok, yerine linux kullan
+            cp -r cha-os/iso-profiles/cha-os-releng /tmp/releng-xfce
+            sed -i "s/^cha-kernel$/linux/" /tmp/releng-xfce/packages.x86_64
+            cat cha-os/iso-profiles/cha-os-releng/packages.xfce.x86_64 >> /tmp/releng-xfce/packages.x86_64
+            mkdir -p out
+            mkarchiso -v -w /tmp/cha-work -o out/ /tmp/releng-xfce/
+            '
+      - name: checksum
+        run: cd out && sha256sum *.iso > SHA256SUMS && cat SHA256SUMS
+      - name: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: cha-os-iso
+          path: out/*

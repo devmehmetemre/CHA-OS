@@ -1,0 +1,83 @@
+# Maintainer: CHA OS Project <repo@cha-os.local>
+pkgbase=cha-kernel
+pkgname=('cha-kernel' 'cha-kernel-headers')
+_pkgver=6.10.8
+_cachyver=6.10.8-2
+pkgver=${_pkgver}.cha1
+pkgrel=1
+pkgdesc="CHA OS kernel: BORE + EEVDF, x86-64-v1 baseline, zstd, low-latency desktop"
+arch=('x86_64')
+url="https://github.com/cha-os/cha-kernel"
+license=('GPL-2.0-only')
+makedepends=('bc' 'cpio' 'gettext' 'libelf' 'pahole' 'perl' 'python' 'tar' 'xz' 'zstd' 'git' 'clang' 'llvm')
+options=('!strip')
+_srcname="linux-${_pkgver}"
+# Kaynaklar: mainline + CachyOS patchset (kendi fork'umuza tasindi) + BORE
+source=(
+  "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-${_pkgver}.tar.xz"
+  "config"
+  "config-lowend"
+  "60-cha-iosched.rules"
+  "99-cha-performance.conf"
+)
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
+# Gercek build'de: updpkgsums ile doldur. SKIP Faz2 iskelet icin.
+
+export KBUILD_BUILD_HOST=cha-os
+export KBUILD_BUILD_USER=cha
+export KBUILD_BUILD_TIMESTAMP="$(date -Ru${SOURCE_DATE_EPOCH:+d @$SOURCE_DATE_EPOCH})"
+
+prepare() {
+  cd "${srcdir}/${_srcname}"
+  echo ">> cha: patchset uygulaniyor (cachyos/fork -> BORE)"
+  # Ornek: kendi fork'umuzdaki patchler:
+  # patch -Np1 -i ../0001-BORE-sched.patch
+  # patch -Np1 -i ../0002-clearlinux-misc.patch
+  # patch -Np1 -i ../0003-zstd-22.patch
+  cp ../config .config
+  # Varyant secimi: LOWEND=1 makepkg ile lowend config merge
+  if [ "${CHA_VARIANT:-desktop}" = "lowend" ]; then
+    ./scripts/kconfig/merge_config.sh -m .config ../config-lowend
+  fi
+  make olddefconfig
+  diff -u ../config .config || true
+}
+
+build() {
+  cd "${srcdir}/${_srcname}"
+  # v1 baseline: -march=x86-64 -mtune=generic
+  # v3 paketi icin: CHA_VARIANT=v3 KCFLAGS="-march=x86-64-v3 -O3" makepkg
+  if [ "${CHA_VARIANT:-desktop}" = "v3" ]; then
+    export KCFLAGS="-march=x86-64-v3 -O3 -pipe"
+  else
+    export KCFLAGS="-march=x86-64 -mtune=generic -O2 -pipe"
+  fi
+  # ThinLTO: hizli + performans dengesi. Full LTO istersen _LTO=full
+  make -j$(nproc) all
+}
+
+_package() {
+  pkgdesc="The CHA Linux kernel and modules"
+  depends=('coreutils' 'kmod' 'mkinitcpio>=30')
+  optdepends=('cha-kernel-v3: x86-64-v3 optimize varyant' 'linux-firmware: donanim suruculeri')
+  backup=("etc/mkinitcpio.d/${pkgbase}.preset")
+  cd "${srcdir}/${_srcname}"
+  local modulesdir="$pkgdir/usr/lib/modules/$(<version)"
+  make INSTALL_MOD_PATH="$pkgdir/usr" INSTALL_MOD_STRIP=1 modules_install
+  cp -v arch/x86/boot/bzImage "$modulesdir/vmlinuz"
+  install -Dm644 ../60-cha-iosched.rules "$pkgdir/usr/lib/udev/rules.d/60-cha-iosched.rules"
+  install -Dm644 ../99-cha-performance.conf "$pkgdir/usr/lib/sysctl.d/99-cha-performance.conf"
+}
+
+_package-headers() {
+  pkgdesc="Headers and scripts for building modules for CHA kernel"
+  depends=('pahole')
+  cd "${srcdir}/${_srcname}"
+  local builddir="$pkgdir/usr/lib/modules/$(<version)/build"
+  install -Dt "$builddir" -m644 .config Makefile Module.symvers System.map version vmlinux
+  make INSTALL_HDR_PATH="$pkgdir/usr" headers_install
+}
+
+for _p in "${pkgname[@]}"; do
+  eval "package_$_p() { $(declare -f "_package${_p#cha-kernel}" | tail -n +2) }"
+done

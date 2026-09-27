@@ -1,0 +1,26 @@
+# Kvantum CHA - GTK ile eslesme, Qt5/Qt6
+# Kullanim: kvantummanager -> CHA sec, qt5ct/qt6ct platformtheme=qt5ct + style=kvantum
+[General]
+author=CHA OS
+comment=CHA Teal on dark header
+x11drag=true
+translucent_windows=false
+reduce_window_opacity=0
+reduce_menu_opacity=0
+contrast=1.0
+intensity=1.0
+saturation=1.0
+
+[Hacks]
+transparent_dolphin_view=false
+style_vertical_toolbars=false
+single_top_toolbar=false
+
+[Colors]
+window.color=#10151A
+base.color=#1A2129
+button.color=#1A2129
+button.text.color=#F2F4F3
+highlight.color=#0FB5A6
+highlight.text.color=#10151A
+link.color=#0A6B62

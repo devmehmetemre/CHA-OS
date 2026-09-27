@@ -1,0 +1,7 @@
+[Unit]
+Description=Reflector mirror refresh (CHA haftalik)
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/reflector --country TR,DE --age 12 --protocol https --sort rate --save /etc/pacman.d/mirrorlist

@@ -1,0 +1,30 @@
+/* CHA GTK3 override - Materia fork uzerine, palet: #0FB5A6/#FFB224/#10151A/#F2F4F3 */
+@define-color cha_primary #0FB5A6;
+@define-color cha_primary_dark #0A6B62;
+@define-color cha_accent #FFB224;
+@define-color cha_bg_dark #10151A;
+@define-color cha_bg_light #F2F4F3;
+
+headerbar, .titlebar {
+  background-color: @cha_bg_dark;
+  color: #F2F4F3;
+  border-bottom: 1px solid #2A323A;
+}
+button.suggested-action {
+  background-color: @cha_primary;
+  color: #10151A;
+  border-radius: 8px;
+}
+button.suggested-action:hover { background-color: #14CDBD; }
+entry:focus {
+  border-color: @cha_primary;
+  box-shadow: 0 0 0 2px alpha(@cha_primary, 0.25);
+}
+selected, selection, *:selected {
+  background-color: @cha_primary;
+  color: #10151A;
+}
+/* Acik mod link: kontrast 5.77 icin koyu varyant */
+a, .link { color: @cha_primary_dark; }
+switch:checked { background-color: @cha_primary; }
+scale highlight { background-color: @cha_primary; }

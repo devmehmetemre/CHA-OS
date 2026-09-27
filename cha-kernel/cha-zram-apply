@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# cha-zram-apply: RAM profiline gore zram boyutunu ayarlar
+# Kural: RAM<4GB -> %150 zstd, 4-8GB -> %100 zstd, >8GB -> %50 zstd
+# Kullanim: sudo ./cha-zram-apply
+set -euo pipefail
+TOTAL_MB=$(free -m | awk '/^Mem:/{print $2}')
+if [ "$TOTAL_MB" -lt 4000 ]; then FACTOR=150; ALGO=zstd
+elif [ "$TOTAL_MB" -lt 8000 ]; then FACTOR=100; ALGO=zstd
+else FACTOR=50; ALGO=zstd
+fi
+SIZE_MB=$((TOTAL_MB * FACTOR / 100))
+mkdir -p /etc/systemd
+cat > /etc/systemd/zram-generator.conf <<EOF
+[zram0]
+zram-size = min($SIZE_MB, 8192)
+compression-algorithm = $ALGO
+swap-priority = 100
+options = discard
+EOF
+echo "RAM=${TOTAL_MB}MB -> zram=${SIZE_MB}MB ($FACTOR%) algo=$ALGO"
+systemctl daemon-reload
+systemctl restart systemd-zram-setup@zram0 || modprobe zram
+swapon --show

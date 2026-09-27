@@ -1,0 +1,18 @@
+# cha-kernel-lowend ek fragmenti: RAM<4GB, 1-2 cekirdek
+# merge: ./scripts/kconfig/merge_config.sh -m .config ../config-lowend
+CONFIG_PREEMPT=y
+CONFIG_PREEMPT_VOLUNTARY=n
+CONFIG_PREEMPT_DYNAMIC=n
+CONFIG_HZ_1000=y
+CONFIG_NO_HZ_IDLE=y
+# Bellek baskisi altinda takas hizli olsun
+CONFIG_ZSWAP=y
+CONFIG_ZSWAP_COMPRESSOR_DEFAULT_ZSTD=y
+CONFIG_ZBUD=y
+CONFIG_ZSMALLOC=y
+# Boyut icin agresif kisma (ornekler, ac/kapa donanima gore):
+# CONFIG_DRM_AMDGPU=n  # ornek: sadece Intel i915 gerekiyorsa diger DRM'leri kapatma burada degil localmodconfig ile
+CONFIG_TRANSPARENT_HUGEPAGE_MADVISE=y
+CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS=n
+CONFIG_COMPACTION=y
+CONFIG_KSM=y

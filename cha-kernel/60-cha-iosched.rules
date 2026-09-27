@@ -1,0 +1,14 @@
+# CHA I/O scheduler otomatik atama - /usr/lib/udev/rules.d/60-cha-iosched.rules
+# HDD -> bfq (adaletli kuyruk, mekanik seek'i toplar)
+ACTION=="add|change", KERNEL=="sd[a-z]", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="bfq"
+# SATA SSD -> mq-deadline (dusuk CPU, yeterli gecikme)
+ACTION=="add|change", KERNEL=="sd[a-z]", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="mq-deadline"
+# NVMe -> none (en dusuk gecikme, CPU yuku yok)
+ACTION=="add|change", KERNEL=="nvme[0-9]*n[0-9]*", ATTR{queue/scheduler}="none"
+# eMMC/mmcblk -> mq-deadline (bfq eMMC'de CPU yakar, kyber kararsiz)
+ACTION=="add|change", KERNEL=="mmcblk[0-9]*", ATTR{queue/scheduler}="mq-deadline"
+# USB stick -> kyber (kisa okuma patlamalarinda iyi)
+ACTION=="add|change", KERNEL=="sd[a-z]", ATTR{queue/rotational}=="0", ENV{ID_BUS}=="usb", ATTR{queue/scheduler}="kyber"
+# readahead: HDD 256KB, SSD/eMMC 128KB
+ACTION=="add|change", KERNEL=="sd[a-z]", ATTR{queue/rotational}=="1", ATTR{queue/read_ahead_kb}="256"
+ACTION=="add|change", KERNEL=="sd[a-z]|mmcblk[0-9]*|nvme[0-9]*n[0-9]*", ATTR{queue/rotational}=="0", ATTR{queue/read_ahead_kb}="128"

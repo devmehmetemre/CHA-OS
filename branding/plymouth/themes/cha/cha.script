@@ -1,0 +1,64 @@
+# CHA Plymouth script - dusuk GPU/CPU pulse + progress
+# 60fps sprite yok, tek logo.png + matematik interpolasyon
+# Cozunurluk bagimsiz: Window.GetX/Y oraniyla scale
+
+WallpaperColor = (0x10, 0x15, 0x1A);
+Accent = (0xFF, 0xB2, 0x24);
+Teal = (0x0F, 0xB5, 0xA6);
+
+# --- olcek ---
+screen.w = Window.GetX();
+screen.h = Window.GetY();
+scale = Math.Min(screen.w / 1920.0, screen.h / 1080.0);
+scale = Math.Max(scale, 0.5);
+
+logo.image = Image("logo.png");
+logo.sprite = Sprite(logo.image);
+logo.w = logo.image.GetWidth() * scale;
+logo.h = logo.image.GetHeight() * scale;
+logo.sprite.SetScale(scale, scale);
+logo.x = (screen.w - logo.w) / 2;
+logo.y = screen.h * 0.38;
+logo.sprite.SetPosition(logo.x, logo.y, 0);
+
+# --- progress bar (ince, accent) ---
+bar.w = screen.w * 0.24;
+bar.h = 4;
+bar.x = (screen.w - bar.w) / 2;
+bar.y = logo.y + logo.h + 40 * scale;
+bar.bg = Image.Text("", 1, 1);
+bar.sprite_bg = Sprite();
+bar.sprite_bg.SetImage(Image("bar-bg.png"));
+bar.sprite_bg.SetScale(bar.w, bar.h);
+bar.sprite_bg.SetPosition(bar.x, bar.y, 0);
+bar.sprite_fg = Sprite();
+bar.sprite_fg.SetImage(Image("bar-fg.png"));
+
+# lineer degil, ease-out: hizli basla yavas bit (premium his)
+fun progress_callback (duration, progress) {
+  if (progress > 1) progress = 1;
+  eased = 1 - (1 - progress) * (1 - progress);
+  w = bar.w * eased;
+  bar.sprite_fg.SetScale(w, bar.h);
+  bar.sprite_fg.SetPosition(bar.x, bar.y, 1);
+  bar.sprite_fg.SetOpacity(1);
+}
+
+# --- nefes alma (pulse): sin ile 0.75-1.0 arasi opacity, 2.4sn periyot ---
+fun refresh_callback () {
+  t = GetTime();
+  # bezier yerine sin: CPU %1-2
+  pulse = 0.875 + 0.125 * Math.Sin(t * 2.6);
+  logo.sprite.SetOpacity(pulse);
+}
+
+# --- sifre sorusu (luks) markali kutu ---
+fun message_callback (text) {
+  msg.image = Image.Text(text, 1, 1, 1);
+  msg.sprite = Sprite(msg.image);
+  msg.sprite.SetPosition((screen.w - msg.image.GetWidth()) / 2, bar.y + 30, 2);
+}
+
+Plymouth.SetBootProgressFunction(progress_callback);
+Plymouth.SetRefreshFunction(refresh_callback);
+Plymouth.SetMessageFunction(message_callback);

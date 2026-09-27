@@ -1,0 +1,7 @@
+# CHA OS LXQt Edition - en dusuk RAM (2GB alti, Atom/Celeron netbook)
+lxqt
+sddm
+openbox
+dunst
+picom
+network-manager-applet

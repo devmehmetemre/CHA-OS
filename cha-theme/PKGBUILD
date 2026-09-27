@@ -1,0 +1,18 @@
+# Maintainer: CHA OS Project
+pkgname=cha-theme
+pkgver=2026.10
+pkgrel=1
+pkgdesc="CHA OS design language: GTK3/4 override + Kvantum + Papirus recolor + fonts"
+arch=('any')
+url="https://github.com/cha-os/cha-theme"
+license=('GPL-3.0-only' 'CC-BY-SA-4.0')
+depends=('materia-gtk-theme' 'papirus-icon-theme' 'kvantum' 'inter-font' 'jetbrains-mono' 'bibata-cursor-theme')
+optdepends=('lightdm-gtk-greeter: XFCE greeter theming' 'sddm: LXQt greeter theming')
+source=('gtk-3.0/gtk.css' 'gtk-4.0/gtk.css' 'kvantum/cha.kvconfig' 'lightdm/lightdm-gtk-greeter.conf')
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP')
+package() {
+  install -Dm644 gtk-3.0/gtk.css "$pkgdir/usr/share/themes/CHA/gtk-3.0/gtk.css"
+  install -Dm644 gtk-4.0/gtk.css "$pkgdir/usr/share/themes/CHA/gtk-4.0/gtk.css"
+  install -Dm644 kvantum/cha.kvconfig "$pkgdir/usr/share/Kvantum/CHA/CHA.kvconfig"
+  install -Dm644 lightdm/lightdm-gtk-greeter.conf "$pkgdir/etc/lightdm/lightdm-gtk-greeter-cha.conf"
+}

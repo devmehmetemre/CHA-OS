@@ -1,0 +1,4 @@
+# Faz1 karari: varsayilan dil YOK. Calamares ilk modulde sorar.
+# Bu dosya live ISO'da iki locale'i hazir tutar, kurulum secimine gore aktif edilir.
+en_US.UTF-8 UTF-8
+tr_TR.UTF-8 UTF-8

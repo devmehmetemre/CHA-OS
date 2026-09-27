@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- CHA XFCE panel: alt tek panel, 32px, Windows gecmis kullanici kaybolmaz -->
+<channel name="xfce4-panel" version="1.0">
+  <property name="panels" type="uint" value="1">
+    <property name="panel-0" type="empty">
+      <property name="position" type="string" value="p=8;x=0;y=0"/>
+      <property name="length" type="uint" value="100"/>
+      <property name="position-locked" type="bool" value="true"/>
+      <property name="size" type="uint" value="32"/>
+      <property name="plugin-ids" type="array">
+        <value type="int" value="1"/>
+        <value type="int" value="2"/>
+        <value type="int" value="3"/>
+        <value type="int" value="4"/>
+        <value type="int" value="5"/>
+        <value type="int" value="6"/>
+      </property>
+    </property>
+    <property name="plugins" type="empty">
+      <!-- 1 whiskermenu, 2 gorev cubugu, 3 ayirici, 4 tepsi, 5 saat, 6 guc -->
+      <property name="plugin-1" type="string" value="whiskermenu"/>
+      <property name="plugin-2" type="string" value="tasklist"/>
+      <property name="plugin-4" type="string" value="systray"/>
+      <property name="plugin-5" type="string" value="clock"/>
+      <property name="plugin-6" type="string" value="power-manager-plugin"/>
+    </property>
+  </property>
+</channel>

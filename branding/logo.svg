@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 64">
+  <rect width="240" height="64" fill="#10151A"/>
+  <text x="18" y="44" font-family="Inter, sans-serif" font-weight="800" font-size="36" letter-spacing="-1" fill="#F2F4F3">CHA<tspan font-weight="400" fill="#0FB5A6">OS</tspan></text>
+  <path d="M18 50 H90 L98 42 L106 56 L114 48 H150" stroke="#FFB224" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+</svg>

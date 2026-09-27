@@ -1,0 +1,24 @@
+# Maintainer: CHA OS
+pkgname=cha-base
+pkgver=2026.10
+pkgrel=1
+pkgdesc="CHA minimal base - bloat yok, eski donanim dostu"
+arch=('any')
+license=('GPL-3.0-only')
+depends=(
+  'base' 'base-devel' 'linux-firmware' 'intel-ucode' 'amd-ucode'
+  'cha-kernel' 'grub' 'efibootmgr' 'mkinitcpio' 'zram-generator'
+  'networkmanager' 'iwd' 'reflector'
+  'tlp' 'fastfetch' 'nano' 'git'
+  'inter-font' 'jetbrains-mono'
+  'cha-theme' 'papirus-icon-theme'
+  'dunst' 'picom'
+)
+# Bilerek YOK: cups (yazicisiz kurulumda), bluetooth (donanim yoksa maskeli), gnome-* / kde-*, snapd, flatpak (opsiyonel), libreoffice (sonradan), pulseaudio (pipewire yerine pipewire+wireplumber Faz4 sonrasi)
+optdepends=(
+  'cups: yazici gerekiyorsa'
+  'bluez bluez-utils: bluetooth donanimi varsa'
+  'pipewire pipewire-pulse wireplumber: modern ses'
+  'cha-kernel-v3: 2009+ CPU hiz'
+)
+package() { mkdir -p "$pkgdir"; }

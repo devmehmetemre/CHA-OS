@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=CHA
+Description=CHA OS pulse boot (dusuk CPU)
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/cha
+ScriptFile=/usr/share/plymouth/themes/cha/cha.script

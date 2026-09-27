@@ -1,0 +1,27 @@
+# CHA base config fragment (x86 defconfig + CHA defaults uzerine)
+# Kullanim: cp /usr/src/linux/.config config baz al, sonra bu degerleri uygula
+CONFIG_SCHED_EEVDF=y
+CONFIG_SCHED_BORE=y
+CONFIG_SCHED_BORE_UPDATE_SCHED_STAT=y
+# CFS_BANDWIDTH container icin gerekli, kapatma
+CONFIG_CFS_BANDWIDTH=y
+CONFIG_PREEMPT_VOLUNTARY=y
+# lowend'de PREEMPT, desktop'ta PREEMPT_DYNAMIC + low-latency
+CONFIG_PREEMPT_DYNAMIC=y
+CONFIG_HZ_1000=y
+CONFIG_NO_HZ_FULL=y
+CONFIG_HIGH_RES_TIMERS=y
+# Boyut: debug kapat
+CONFIG_DEBUG_KERNEL=n
+CONFIG_DEBUG_INFO_NONE=y
+CONFIG_DEBUG_MISC=n
+# Sıkıstırma: zstd
+CONFIG_KERNEL_ZSTD=y
+CONFIG_MODULE_COMPRESS_ZSTD=y
+CONFIG_ZRAM_BACKEND_ZSTD=y
+CONFIG_ZRAM_BACKEND_LZ4=y
+# BFQ/kyber mq-deadline hepsi moduler acik, udev kurali secer
+CONFIG_MQ_IOSCHED_DEADLINE=m
+CONFIG_MQ_IOSCHED_KYBER=m
+CONFIG_IOSCHED_BFQ=m
+CONFIG_BFQ_GROUP_IOSCHED=y

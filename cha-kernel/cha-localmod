@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# cha-localmod: gereksiz suruculeri ele, vmlinuz <10MB hedefi icin
+# Adimlar: calisan donanimda lsmod -> localmodconfig -> eski config ile merge
+set -euo pipefail
+KDIR=${1:-/usr/src/cha-kernel}
+cd "$KDIR"
+cp /boot/config-$(uname -r) .config 2>/dev/null || cp ../config .config
+lsmod > /tmp/mylsmod
+make LSMOD=/tmp/mylsmod localmodconfig
+./scripts/kconfig/merge_config.sh -m .config ../config
+make olddefconfig
+echo "--- boyut tahmini ---"
+scripts/bloat-o-meter -c vmlinux.old vmlinux 2>/dev/null || true
+du -sh arch/x86/boot/bzImage || true
+echo "Hedef: bzImage <10MB (zstd). Tutamiyorsan CONFIG_DEBUG_* ve DRM_AMDGPU/NVIDIA gereksizleri kapat."
