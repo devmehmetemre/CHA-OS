@@ -5,6 +5,7 @@ intel-ucode
 amd-ucode
 grub
 efibootmgr
+syslinux
 archiso
 networkmanager
 iwd

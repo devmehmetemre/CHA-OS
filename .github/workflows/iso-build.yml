@@ -22,7 +22,7 @@ jobs:
             set -e
             pacman -Syu --noconfirm --needed archiso mkinitcpio git reflector librsvg imagemagick grub squashfs-tools dosfstools mtools xorriso
             # asset uretimi (o kodlar da Actionsda calisir)
-            bash branding/grub/make-grub-assets.sh || (mkdir -p branding/grub/themes/cha && convert -size 1920x1080 xc:"#10151A" branding/grub/themes/cha/background.png)
+            bash branding/grub/make-grub-assets.sh || (mkdir -p branding/grub/themes/cha && (command -v magick >/dev/null && magick -size 1920x1080 xc:"#10151A" branding/grub/themes/cha/background.png || convert -size 1920x1080 xc:"#10151A" branding/grub/themes/cha/background.png))
             bash branding/plymouth/make-plymouth-assets.sh || true
             # CI gecici: cha-kernel henuz repoda yok, yerine linux kullan
             cp -r iso-profiles/cha-os-releng /tmp/releng-xfce

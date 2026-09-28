@@ -5,7 +5,7 @@ iso_publisher="CHA OS Project"
 iso_application="CHA OS Live/Install"
 iso_version="2026.10-Kivilcim"
 install_dir="arch"
-bootmodes=('bios.syslinux.mbr' 'bios.syslinux.eltorito' 'uefi-x64.systemd-boot.esp' 'uefi-x64.systemd-boot.eltorito')
+bootmodes=('bios.syslinux' 'uefi.systemd-boot')
 arch="x86_64"
 # Faz1 karari: x86-64-v1 baseline (Core2/Atom N450 dahil). v3 optimize kernel Faz2'de ayri paket olacak.
 # ARM portu ertelendi, bu profil sadece x86_64 uretir.
