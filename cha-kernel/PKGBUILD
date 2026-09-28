@@ -9,7 +9,7 @@ pkgdesc="CHA OS kernel: BORE + EEVDF, x86-64-v1 baseline, zstd, low-latency desk
 arch=('x86_64')
 url="https://github.com/cha-os/cha-kernel"
 license=('GPL-2.0-only')
-makedepends=('bc' 'cpio' 'gettext' 'libelf' 'pahole' 'perl' 'python' 'tar' 'xz' 'zstd' 'git' 'gcc' 'clang' 'llvm')
+makedepends=('bc' 'cpio' 'gettext' 'libelf' 'pahole' 'perl' 'python' 'tar' 'xz' 'zstd' 'git' 'gcc' 'clang' 'llvm' 'rsync' 'openssl' 'flex' 'bison' 'kmod' 'mkinitcpio')
 options=('!strip')
 _srcname="linux-${_pkgver}"
 # Kaynaklar: mainline + CachyOS patchset (kendi fork'umuza tasindi) + BORE

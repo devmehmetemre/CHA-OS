@@ -16,9 +16,13 @@ jobs:
       - uses: actions/checkout@v4
       - name: deps
         run: |
-          pacman -Syu --noconfirm --needed base-devel bc cpio gettext libelf pahole perl python tar xz zstd git clang llvm ccache
+          pacman -Syu --noconfirm --needed base-devel bc cpio gettext libelf pahole perl python tar xz zstd git clang llvm ccache rsync openssl flex bison kmod mkinitcpio
           sed -i 's/ debug/ !debug/' /etc/makepkg.conf
           grep -q MAKEFLAGS /etc/makepkg.conf || echo 'MAKEFLAGS="-j2"' >> /etc/makepkg.conf
+      - name: preflight (30 saniyede paketleme araclari denetimi)
+        run: |
+          for t in rsync openssl pahole flex bison bc cpio depmod python3 gcc make; do command -v $t >/dev/null || { echo "EKSIK: $t"; exit 1; }; done
+          echo "preflight OK"
       - name: ccache
         uses: actions/cache@v4
         with:
