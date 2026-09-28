@@ -39,23 +39,18 @@ prepare() {
   if [ "${CHA_VARIANT:-desktop}" = "lowend" ]; then
     ./scripts/kconfig/merge_config.sh -m .config ../config-lowend
   fi
+  # gcc15/clang20 varsayilan -std=c23, 6.10 bool/false ile patlar.
+  # KCFLAGS env kbuild'e islemedigi icin dogrudan Makefile'a sabitle (son flag kazanir).
+  printf '\nKBUILD_CFLAGS += -std=gnu11\nHOSTCFLAGS += -std=gnu11\n' >> Makefile
   make olddefconfig
   diff -u ../config .config || true
 }
 
 build() {
   cd "${srcdir}/${_srcname}"
-  # v1 baseline: -march=x86-64 -mtune=generic
-  # v3 paketi icin: CHA_VARIANT=v3 KCFLAGS="-march=x86-64-v3 -O3" makepkg
-  # NOT: Arch gcc15+/clang20+ varsayilan -std=c23, 6.10 bool/false ile patlar. gnu11'e sabitle.
-  if [ "${CHA_VARIANT:-desktop}" = "v3" ]; then
-    export KCFLAGS="-march=x86-64-v3 -O3 -pipe -std=gnu11"
-  else
-    export KCFLAGS="-march=x86-64 -mtune=generic -O2 -pipe -std=gnu11"
-  fi
-  export HOSTCFLAGS="-std=gnu11"
-  export HOSTCXXFLAGS="-std=gnu++11"
-  # ThinLTO: hizli + performans dengesi. Full LTO istersen _LTO=full
+  # NOT: -march/-O seviyesi KCFLAGS env ile kbuild'e islemez.
+  # Microarch Kconfig'ten gelir (CONFIG_X86_64_V1/V3). v3 icin ayri config fragmenti eklenecek.
+  # Burada sadece derle; optimizasyon config'tedir.
   make -j$(nproc) all
 }
 
