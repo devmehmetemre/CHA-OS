@@ -19,3 +19,6 @@ cat iso-profiles/cha-os-releng/packages.xfce.x86_64 >> /tmp/releng-xfce/packages
 awk '/^\[cha-repo\]/{skip=1;next} /^\[/{skip=0} !skip' /tmp/releng-xfce/pacman.conf > /tmp/pac && mv /tmp/pac /tmp/releng-xfce/pacman.conf
 mkdir -p out
 mkarchiso -v -w /tmp/cha-work -o out/ /tmp/releng-xfce/
+# checksum container icinde (root), sahipligi host kullaniciya devret (upload okuyabilsin)
+cd out && sha256sum *.iso > SHA256SUMS && cat SHA256SUMS && cd /workspace
+chown -R --reference=/workspace/repo-tools/ci-build-iso.sh /workspace/out || true

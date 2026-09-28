@@ -19,8 +19,8 @@ jobs:
           docker run --privileged --rm \
             -v $GITHUB_WORKSPACE:/workspace -w /workspace \
             archlinux:latest bash repo-tools/ci-build-iso.sh
-      - name: checksum
-        run: cd out && sha256sum *.iso > SHA256SUMS && cat SHA256SUMS
+      - name: verify
+        run: ls -lh out/ && cat out/SHA256SUMS
       - name: upload
         uses: actions/upload-artifact@v4
         with:
