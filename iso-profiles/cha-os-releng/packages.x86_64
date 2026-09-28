@@ -9,8 +9,6 @@ syslinux
 archiso
 networkmanager
 iwd
-base-devel
-git
 nano
 inter-font
 ttf-jetbrains-mono

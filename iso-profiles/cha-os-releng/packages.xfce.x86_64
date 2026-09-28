@@ -1,6 +1,6 @@
 # CHA OS XFCE Edition - resmi hafif amiral gemisi (2-4GB RAM hedefi)
 xfce4
-xfce4-goodies
+xfce4-whiskermenu-plugin
 lightdm
 lightdm-gtk-greeter
 network-manager-applet
