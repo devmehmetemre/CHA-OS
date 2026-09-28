@@ -9,7 +9,7 @@ pkgdesc="CHA OS kernel: BORE + EEVDF, x86-64-v1 baseline, zstd, low-latency desk
 arch=('x86_64')
 url="https://github.com/cha-os/cha-kernel"
 license=('GPL-2.0-only')
-makedepends=('bc' 'cpio' 'gettext' 'libelf' 'pahole' 'perl' 'python' 'tar' 'xz' 'zstd' 'git' 'clang' 'llvm')
+makedepends=('bc' 'cpio' 'gettext' 'libelf' 'pahole' 'perl' 'python' 'tar' 'xz' 'zstd' 'git' 'gcc' 'clang' 'llvm')
 options=('!strip')
 _srcname="linux-${_pkgver}"
 # Kaynaklar: mainline + CachyOS patchset (kendi fork'umuza tasindi) + BORE
@@ -47,11 +47,14 @@ build() {
   cd "${srcdir}/${_srcname}"
   # v1 baseline: -march=x86-64 -mtune=generic
   # v3 paketi icin: CHA_VARIANT=v3 KCFLAGS="-march=x86-64-v3 -O3" makepkg
+  # NOT: Arch gcc15+/clang20+ varsayilan -std=c23, 6.10 bool/false ile patlar. gnu11'e sabitle.
   if [ "${CHA_VARIANT:-desktop}" = "v3" ]; then
-    export KCFLAGS="-march=x86-64-v3 -O3 -pipe"
+    export KCFLAGS="-march=x86-64-v3 -O3 -pipe -std=gnu11"
   else
-    export KCFLAGS="-march=x86-64 -mtune=generic -O2 -pipe"
+    export KCFLAGS="-march=x86-64 -mtune=generic -O2 -pipe -std=gnu11"
   fi
+  export HOSTCFLAGS="-std=gnu11"
+  export HOSTCXXFLAGS="-std=gnu++11"
   # ThinLTO: hizli + performans dengesi. Full LTO istersen _LTO=full
   make -j$(nproc) all
 }
