@@ -22,12 +22,12 @@ jobs:
             set -e
             pacman -Syu --noconfirm --needed archiso mkinitcpio git reflector librsvg imagemagick grub squashfs-tools dosfstools mtools xorriso
             # asset uretimi (o kodlar da Actionsda calisir)
-            bash cha-os/branding/grub/make-grub-assets.sh || (mkdir -p cha-os/branding/grub/themes/cha && convert -size 1920x1080 xc:"#10151A" cha-os/branding/grub/themes/cha/background.png)
-            bash cha-os/branding/plymouth/make-plymouth-assets.sh || true
+            bash branding/grub/make-grub-assets.sh || (mkdir -p branding/grub/themes/cha && convert -size 1920x1080 xc:"#10151A" branding/grub/themes/cha/background.png)
+            bash branding/plymouth/make-plymouth-assets.sh || true
             # CI gecici: cha-kernel henuz repoda yok, yerine linux kullan
-            cp -r cha-os/iso-profiles/cha-os-releng /tmp/releng-xfce
+            cp -r iso-profiles/cha-os-releng /tmp/releng-xfce
             sed -i "s/^cha-kernel$/linux/" /tmp/releng-xfce/packages.x86_64
-            cat cha-os/iso-profiles/cha-os-releng/packages.xfce.x86_64 >> /tmp/releng-xfce/packages.x86_64
+            cat iso-profiles/cha-os-releng/packages.xfce.x86_64 >> /tmp/releng-xfce/packages.x86_64
             mkdir -p out
             mkarchiso -v -w /tmp/cha-work -o out/ /tmp/releng-xfce/
             '

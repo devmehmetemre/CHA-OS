@@ -25,7 +25,7 @@ jobs:
           path: /root/.cache/ccache
           key: cha-ccache-${{ inputs.variant || 'desktop' }}
       - name: build
-        working-directory: cha-os/cha-kernel
+        working-directory: cha-kernel
         run: |
           id builder 2>/dev/null || useradd -m builder
           chown -R builder:builder .
@@ -35,5 +35,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cha-kernel-${{ inputs.variant || 'desktop' }}
-          path: cha-os/cha-kernel/*.pkg.tar.zst
+          path: cha-kernel/*.pkg.tar.zst
   # ARM portu Faz1 karariyla kapali.
