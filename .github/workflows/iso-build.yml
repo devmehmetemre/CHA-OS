@@ -18,21 +18,7 @@ jobs:
         run: |
           docker run --privileged --rm \
             -v $GITHUB_WORKSPACE:/workspace -w /workspace \
-            archlinux:latest bash -c '
-            set -e
-            pacman -Syu --noconfirm --needed archiso mkinitcpio git reflector librsvg imagemagick grub squashfs-tools dosfstools mtools xorriso
-            # asset uretimi (o kodlar da Actionsda calisir)
-            bash branding/grub/make-grub-assets.sh || (mkdir -p branding/grub/themes/cha && (command -v magick >/dev/null && magick -size 1920x1080 xc:"#10151A" branding/grub/themes/cha/background.png || convert -size 1920x1080 xc:"#10151A" branding/grub/themes/cha/background.png))
-            bash branding/plymouth/make-plymouth-assets.sh || true
-            # CI gecici: cha-kernel henuz repoda yok, yerine linux kullan
-            cp -r iso-profiles/cha-os-releng /tmp/releng-xfce
-            sed -i "s/^cha-kernel$/linux/" /tmp/releng-xfce/packages.x86_64
-            cat iso-profiles/cha-os-releng/packages.xfce.x86_64 >> /tmp/releng-xfce/packages.x86_64
-            # CI: [cha-repo] sunucusu henuz yok -> profil kopyasindan dusur (ISO'da cha-* paketi yok)
-            awk '/^\[cha-repo\]/{skip=1;next} /^\[/{skip=0} !skip' /tmp/releng-xfce/pacman.conf > /tmp/pac && mv /tmp/pac /tmp/releng-xfce/pacman.conf
-            mkdir -p out
-            mkarchiso -v -w /tmp/cha-work -o out/ /tmp/releng-xfce/
-            '
+            archlinux:latest bash repo-tools/ci-build-iso.sh
       - name: checksum
         run: cd out && sha256sum *.iso > SHA256SUMS && cat SHA256SUMS
       - name: upload
