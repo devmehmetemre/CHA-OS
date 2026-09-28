@@ -1,8 +1,8 @@
 # Maintainer: CHA OS Project <repo@cha-os.local>
 pkgbase=cha-kernel
 pkgname=('cha-kernel' 'cha-kernel-headers')
-_pkgver=6.10.8
-_cachyver=6.10.8-2
+_pkgver=6.12.111
+_cachyver=6.12.111-1
 pkgver=${_pkgver}.cha1
 pkgrel=1
 pkgdesc="CHA OS kernel: BORE + EEVDF, x86-64-v1 baseline, zstd, low-latency desktop"
