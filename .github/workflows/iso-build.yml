@@ -28,6 +28,8 @@ jobs:
             cp -r iso-profiles/cha-os-releng /tmp/releng-xfce
             sed -i "s/^cha-kernel$/linux/" /tmp/releng-xfce/packages.x86_64
             cat iso-profiles/cha-os-releng/packages.xfce.x86_64 >> /tmp/releng-xfce/packages.x86_64
+            # CI: [cha-repo] sunucusu henuz yok -> profil kopyasindan dusur (ISO'da cha-* paketi yok)
+            awk '/^\[cha-repo\]/{skip=1;next} /^\[/{skip=0} !skip' /tmp/releng-xfce/pacman.conf > /tmp/pac && mv /tmp/pac /tmp/releng-xfce/pacman.conf
             mkdir -p out
             mkarchiso -v -w /tmp/cha-work -o out/ /tmp/releng-xfce/
             '
