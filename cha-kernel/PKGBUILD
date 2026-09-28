@@ -56,6 +56,9 @@ build() {
   # Microarch Kconfig'ten gelir (CONFIG_X86_64_V1/V3). v3 icin ayri config fragmenti eklenecek.
   # CC wrapper prepare()'da uretildi: her dosyaya -std=gnu11 zorlar (boot/compressed dahil).
   make -j2 all CC="$srcdir/cha-cc" HOSTCC="$srcdir/cha-hostcc"
+  # Arch gelenegi: surum dosyasi + symvers garantisi (package_* fonksiyonlari $(<version) okur)
+  make -s kernelrelease > version
+  test -f Module.symvers || make -j2 modules CC="$srcdir/cha-cc" HOSTCC="$srcdir/cha-hostcc"
 }
 
 _package() {
