@@ -10,7 +10,7 @@ depends=(
   'cha-kernel' 'grub' 'efibootmgr' 'mkinitcpio' 'zram-generator'
   'networkmanager' 'iwd' 'reflector'
   'tlp' 'fastfetch' 'nano' 'git'
-  'inter-font' 'jetbrains-mono'
+  'inter-font' 'ttf-jetbrains-mono'
   'cha-theme' 'papirus-icon-theme'
   'dunst' 'picom'
 )
