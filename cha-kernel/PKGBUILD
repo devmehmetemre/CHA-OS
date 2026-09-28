@@ -34,7 +34,10 @@ prepare() {
   # patch -Np1 -i ../0001-BORE-sched.patch
   # patch -Np1 -i ../0002-clearlinux-misc.patch
   # patch -Np1 -i ../0003-zstd-22.patch
-  cp ../config .config
+  # Saganakli taban: once x86_64_defconfig (tam config), sonra CHA fragmentleri merge edilir.
+  # Fragmenti dogrudan .config diye kopyalamak CONFIG_MODULES=n birakir -> monolitik kernel, symvers uremez.
+  make x86_64_defconfig
+  ./scripts/kconfig/merge_config.sh -m .config ../config
   # Varyant secimi: LOWEND=1 makepkg ile lowend config merge
   if [ "${CHA_VARIANT:-desktop}" = "lowend" ]; then
     ./scripts/kconfig/merge_config.sh -m .config ../config-lowend
@@ -47,7 +50,7 @@ prepare() {
   chmod +x "$srcdir/cha-cc" "$srcdir/cha-hostcc"
   printf '\nKBUILD_CFLAGS += -std=gnu11\nHOSTCFLAGS += -std=gnu11\n' >> Makefile
   make olddefconfig
-  diff -u ../config .config || true
+  grep -E '^CONFIG_MODULES=|^CONFIG_SCHED_BORE=|^CONFIG_HZ_1000=' .config || true
 }
 
 build() {

@@ -1,5 +1,8 @@
-# CHA base config fragment (x86 defconfig + CHA defaults uzerine)
-# Kullanim: cp /usr/src/linux/.config config baz al, sonra bu degerleri uygula
+# CHA base config fragment - HER ZAMAN merge ile kullanilir, tek basina .config DEGILDIR
+# prepare(): make x86_64_defconfig + merge_config.sh -m .config ../config
+CONFIG_MODULES=y
+CONFIG_MODULE_UNLOAD=y
+CONFIG_MODVERSIONS=y
 CONFIG_SCHED_EEVDF=y
 CONFIG_SCHED_BORE=y
 CONFIG_SCHED_BORE_UPDATE_SCHED_STAT=y
