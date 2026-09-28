@@ -40,7 +40,11 @@ prepare() {
     ./scripts/kconfig/merge_config.sh -m .config ../config-lowend
   fi
   # gcc15/clang20 varsayilan -std=c23, 6.10 bool/false ile patlar.
-  # KCFLAGS env kbuild'e islemedigi icin dogrudan Makefile'a sabitle (son flag kazanir).
+  # NOT: top Makefile'a eklenen flag boot/ dizinindeki `KBUILD_CFLAGS :=` resetine takiliyor.
+  # Garanti cozum: derleyici wrapper - her cagriya -std=gnu11 enjekte eder.
+  printf '#!/bin/sh\nexec ccache gcc -std=gnu11 "$@"\n' > "$srcdir/cha-cc"
+  printf '#!/bin/sh\nexec gcc -std=gnu11 "$@"\n' > "$srcdir/cha-hostcc"
+  chmod +x "$srcdir/cha-cc" "$srcdir/cha-hostcc"
   printf '\nKBUILD_CFLAGS += -std=gnu11\nHOSTCFLAGS += -std=gnu11\n' >> Makefile
   make olddefconfig
   diff -u ../config .config || true
@@ -50,8 +54,8 @@ build() {
   cd "${srcdir}/${_srcname}"
   # NOT: -march/-O seviyesi KCFLAGS env ile kbuild'e islemez.
   # Microarch Kconfig'ten gelir (CONFIG_X86_64_V1/V3). v3 icin ayri config fragmenti eklenecek.
-  # Burada sadece derle; optimizasyon config'tedir.
-  make -j$(nproc) all
+  # CC wrapper prepare()'da uretildi: her dosyaya -std=gnu11 zorlar (boot/compressed dahil).
+  make -j2 all CC="$srcdir/cha-cc" HOSTCC="$srcdir/cha-hostcc"
 }
 
 _package() {
